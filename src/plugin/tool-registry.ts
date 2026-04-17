@@ -183,7 +183,7 @@ export function trimToolsToCap(filteredTools: ToolsRecord, maxTools: number): vo
 export function createToolRegistry(args: {
   ctx: PluginContext
   pluginConfig: OhMyOpenCodeConfig
-  managers: Pick<Managers, "backgroundManager" | "tmuxSessionManager" | "skillMcpManager">
+  managers: Pick<Managers, "backgroundManager" | "tmuxSessionManager" | "skillMcpManager" | "modelFallbackControllerAccessor">
   skillContext: SkillContext
   availableCategories: AvailableCategory[]
   interactiveBashEnabled?: boolean
@@ -209,6 +209,7 @@ export function createToolRegistry(args: {
     pluginConfig.disabled_agents ?? [],
     pluginConfig.agents,
     pluginConfig.categories,
+    managers.modelFallbackControllerAccessor,
   )
 
   const isMultimodalLookerEnabled = !(pluginConfig.disabled_agents ?? []).some(
@@ -230,6 +231,7 @@ export function createToolRegistry(args: {
     availableSkills: skillContext.availableSkills,
     sisyphusAgentConfig: pluginConfig.sisyphus_agent,
     syncPollTimeoutMs: pluginConfig.background_task?.syncPollTimeoutMs,
+    modelFallbackControllerAccessor: managers.modelFallbackControllerAccessor,
     onSyncSessionCreated: async (event) => {
       log("[index] onSyncSessionCreated callback", {
         sessionID: event.sessionID,
