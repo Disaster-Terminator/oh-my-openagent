@@ -149,12 +149,12 @@ export async function transitionRuntimeState(
 
 export async function listActiveTeams(
   config: TeamModeConfig,
-): Promise<Array<{ teamRunId: string; teamName: string; status: string }>> {
+): Promise<Array<{ teamRunId: string; teamName: string; status: string; memberCount: number; scope: "project" | "user" }>> {
   const baseDir = resolveBaseDir(config)
 
   try {
     const runtimeEntries = await readdir(path.join(baseDir, "runtime"), { withFileTypes: true })
-    const activeTeams: Array<{ teamRunId: string; teamName: string; status: string }> = []
+    const activeTeams: Array<{ teamRunId: string; teamName: string; status: string; memberCount: number; scope: "project" | "user" }> = []
 
     for (const runtimeEntry of runtimeEntries) {
       if (!runtimeEntry.isDirectory()) continue
@@ -165,6 +165,8 @@ export async function listActiveTeams(
           teamRunId: runtimeState.teamRunId,
           teamName: runtimeState.teamName,
           status: runtimeState.status,
+          memberCount: runtimeState.members.length,
+          scope: runtimeState.specSource,
         })
       } catch (error) {
         log("team runtime state skipped", {
