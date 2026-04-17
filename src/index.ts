@@ -62,6 +62,16 @@ const OhMyOpenCodePlugin: Plugin = async (ctx) => {
   if (pluginConfig.openclaw) {
     await initializeOpenClaw(pluginConfig.openclaw)
   }
+  if (pluginConfig.team_mode?.enabled) {
+    try {
+      const { ensureBaseDirs, resolveBaseDir } = await import("./features/team-mode/team-registry/paths")
+      const { checkTeamModeDependencies } = await import("./features/team-mode/deps")
+      await checkTeamModeDependencies(pluginConfig.team_mode)
+      await ensureBaseDirs(resolveBaseDir(pluginConfig.team_mode))
+    } catch (err) {
+      console.warn("[team-mode] init failed:", err)
+    }
+  }
   const tmuxIntegrationEnabled = isTmuxIntegrationEnabled(pluginConfig)
   if (tmuxIntegrationEnabled) {
     startTmuxCheck()
